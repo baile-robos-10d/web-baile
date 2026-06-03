@@ -9,15 +9,13 @@ import Lance from './assets/lance-logo.png';
 import Controle from './components/controle';
 import Musicas from './components/musicasV2';
 import Coreografia from './components/coreografia';
-import LigaLeds from './components/leds';
-//import Giroscopio from './components/giroscopio';
+// import LigaLeds from './components/leds'; // REMOVIDO
 import Sobre from './components/sobre';
-import ControleGiroscopio from './components/ControleGiroscopio'; // NOVO
+import ControleGiroscopio from './components/ControleGiroscopio';
 import useMQTT from './hooks/useMQTT';
 
 function App() {
     const [currentPage, setCurrentPage] = useState('controle');
-    // Usar variável de ambiente
     const brokerUrl = process.env.REACT_APP_MQTT_BROKER || 'wss://wf671196.ala.us-east-1.emqxsl.com:8084/mqtt';
     const { isConnected, status } = useMQTT(brokerUrl);
 
@@ -37,11 +35,11 @@ function App() {
                                 <Coreografia/>
                             </div>
                         </aside>
-                        <LigaLeds/>
+                        {/* Componente LigaLeds REMOVIDO */}
                     </>
                 );
             case 'giroscopio':
-                return <ControleGiroscopio />; // NOVO componente
+                return <ControleGiroscopio />;
             case 'sobre':
                 return <Sobre />;
             default:
@@ -49,7 +47,6 @@ function App() {
         }
     };
 
-    // Adicionar useEffect para log do broker (debug)
     useEffect(() => {
         console.log('🚀 App iniciado');
         console.log('🔗 Broker MQTT:', brokerUrl);
@@ -57,7 +54,6 @@ function App() {
 
     return (
         <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-[#f62681] via-[#f62681] to-[#fffaec]">
-            {/* Indicador global flutuante */}
             <div className={`fixed top-2 right-2 px-3 py-1 rounded-full text-sm font-bold z-50 shadow-lg ${
                 isConnected ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
             }`}>
@@ -65,7 +61,6 @@ function App() {
                 {status && <span className="ml-2 text-xs">({status})</span>}
             </div>
             
-            {/* Header */}
             <header className="flex flex-col self-stretch pb-2.5 w-full max-md:max-w-full">
                 <nav className="flex justify-center items-center px-16 bg-white border-pink-900-solid border-b-[3px] max-md:px-5 max-md:max-w-full">
                     <div className="flex gap-5 justify-between w-full max-w-[1212px] max-md:flex-wrap max-md:max-w-full">
@@ -75,7 +70,17 @@ function App() {
                             </button>
                         </div>
                         <div className="flex items-center">
-                            <div className="flex gap-5 px-7 py-1.5 text-base font-bold text-center max-md:flex-wrap max-md:px-5">
+                            <div className="flex gap-3 px-7 py-1.5 text-base font-bold text-center max-md:flex-wrap max-md:px-5">
+                                <button 
+                                    onClick={() => setCurrentPage('controle')}
+                                    className={`py-2 px-4 border rounded transition-colors ${
+                                        currentPage === 'controle' 
+                                            ? 'bg-[#F68621] text-white border-[#F68621]' 
+                                            : 'border-[#D96204] hover:text-[#A0470C] hover:border-[#A0470C]'
+                                    }`}
+                                >
+                                    🎮 Controle Manual
+                                </button>
                                 <button 
                                     onClick={() => setCurrentPage('giroscopio')}
                                     className={`py-2 px-4 border rounded transition-colors ${
@@ -84,7 +89,7 @@ function App() {
                                             : 'border-[#D96204] hover:text-[#A0470C] hover:border-[#A0470C]'
                                     }`}
                                 >
-                                    🎮 Controle por Giro
+                                    🎯 Controle por Giro
                                 </button>
                                 <button className='bg-transparent hover:text-[#A0470C] py-2 px-4 border border-[#D96204] hover:border-[#A0470C] rounded transition-colors'>
                                     Digital Twins
@@ -105,10 +110,8 @@ function App() {
                 </nav>
             </header>
             
-            {/* Conteúdo Dinâmico */}
             {renderPage()}
             
-            {/* Footer (mantém igual) */}
             <footer className="flex flex-col justify-center self-stretch mt-20 w-full bg-stone-500 bg-opacity-80 max-md:mt-10 max-md:max-w-full">
                 <div className="flex flex-col items-center px-16 pt-6 pb-3.5 w-full max-md:px-5 max-md:max-w-full">
                     <div className="flex flex-col max-w-full w-[604px]">

@@ -5,7 +5,7 @@ import useMQTT from '../hooks/useMQTT';
 function Coreografia() {
     const [isRunning, setIsRunning] = useState(false);
     const [mensagem, setMensagem] = useState('');
-    const { iniciarCoreografia, pararCoreografia, isConnected } = useMQTT();
+    const { iniciarCoreografia, pararCoreografia, parar, isConnected } = useMQTT();
 
     const handleClick = () => {
         console.log('🎬 INICIAR coreografia pressionado');
@@ -24,7 +24,7 @@ function Coreografia() {
             return;
         }
         
-        console.log('📤 Enviando comando para iniciar coreografia');
+        console.log('📤 Enviando comando para iniciar coreografia: DN0CG');
         iniciarCoreografia();
         setIsRunning(true);
         setMensagem('🎬 Coreografia iniciada!');
@@ -48,40 +48,42 @@ function Coreografia() {
             return;
         }
         
-        console.log('📤 Enviando comando para parar coreografia');
+        console.log('📤 Enviando comando para parar coreografia: DN0CPA');
+        
+        // Envia o comando de parada
         pararCoreografia();
+        
+        // Também envia parar para garantir
+        parar();
+        
+        // Força o estado para false
         setIsRunning(false);
-        setMensagem('⏹️ Coreografia parada');
+        setMensagem('⏹️ Coreografia parada!');
         setTimeout(() => setMensagem(''), 2000);
     };
 
     return (
         <div className="flex flex-col items-center px-6 py-8 w-full font-bold bg-white border-pink-400 border-solid border-[10px] rounded-[32px] text-amber-950">
-            {/* Título */}
             <section className="text-5xl max-md:text-4xl mb-2">
                 Coreografia
             </section>
             
-            {/* Status de conexão */}
             <div className={`text-sm mb-4 ${isConnected ? 'text-green-500' : 'text-red-500'}`}>
                 {isConnected ? '🎬 Sistema de coreografia pronto' : '⚠️ Coreografia desconectada'}
             </div>
             
-            {/* Status de execução */}
             {isRunning && (
                 <div className="text-sm text-green-500 animate-pulse mb-4">
                     🎬 Executando coreografia...
                 </div>
             )}
             
-            {/* Mensagem de feedback */}
             {mensagem && (
                 <div className="text-sm text-pink-600 mb-4 animate-pulse">
                     {mensagem}
                 </div>
             )}
             
-            {/* Status atual */}
             <div className="text-sm text-gray-500 mb-6">
                 {isRunning ? (
                     <span>✅ Coreografia em execução</span>
@@ -90,9 +92,7 @@ function Coreografia() {
                 )}
             </div>
             
-            {/* Botões de controle INICIAR e PARAR */}
             <div className="flex gap-6 w-full max-w-md">
-                {/* Botão INICIAR */}
                 <button
                     onClick={handleClick}
                     disabled={!isConnected || isRunning}
@@ -109,7 +109,6 @@ function Coreografia() {
                     <span>🎬</span> INICIAR
                 </button>
                 
-                {/* Botão PARAR */}
                 <button
                     onClick={handleStop}
                     disabled={!isConnected || !isRunning}
@@ -127,7 +126,6 @@ function Coreografia() {
                 </button>
             </div>
             
-            {/* Dica de uso */}
             <div className="mt-6 text-xs text-gray-400 text-center">
                 <p>💡 Clique em INICIAR para executar a coreografia &nbsp;&nbsp; Use PARAR para interromper</p>
             </div>
