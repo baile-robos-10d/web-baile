@@ -5,7 +5,7 @@ import useMQTT from '../hooks/useMQTT';
 function Coreografia() {
     const [isRunning, setIsRunning] = useState(false);
     const [mensagem, setMensagem] = useState('');
-    const { iniciarCoreografia, pararCoreografia, parar, isConnected } = useMQTT();
+    const { iniciarCoreografia, pararCoreografia, isConnected } = useMQTT();
 
     const handleClick = () => {
         console.log('🎬 INICIAR coreografia pressionado');
@@ -50,11 +50,7 @@ function Coreografia() {
         
         console.log('📤 Enviando comando para parar coreografia: DN0CPA');
         
-        // Envia o comando de parada
         pararCoreografia();
-        
-        // Também envia parar para garantir
-        parar();
         
         // Força o estado para false
         setIsRunning(false);

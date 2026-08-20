@@ -6,7 +6,7 @@ import Direita from '../assets/seta_rigth.jpg';
 import Baixo from '../assets/seta_down.png';
 
 function Controle() {
-    const { mover, parar, isConnected } = useMQTT('wss://wf671196.ala.us-east-1.emqxsl.com:8084/mqtt');
+    const { mover, parar, isConnected } = useMQTT('wss://ycff1281.ala.eu-central-1.emqxsl.com:8084/mqtt');
     const [activeDir, setActiveDir] = useState(null);
 
     const handleStart = useCallback((x, y, dir) => {

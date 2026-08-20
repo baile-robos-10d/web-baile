@@ -11,13 +11,16 @@ import Musicas from './components/musicasV2';
 import Coreografia from './components/coreografia';
 // import LigaLeds from './components/leds'; // REMOVIDO
 import Sobre from './components/sobre';
+import ControleMultiRobo from './components/ControleMultiRobo';
+import DigitalTwin from './components/DigitalTwin';
 import ControleGiroscopio from './components/ControleGiroscopio';
 import useMQTT from './hooks/useMQTT';
 
 function App() {
     const [currentPage, setCurrentPage] = useState('controle');
-    const brokerUrl = process.env.REACT_APP_MQTT_BROKER || 'wss://wf671196.ala.us-east-1.emqxsl.com:8084/mqtt';
-    const { isConnected, status } = useMQTT(brokerUrl);
+    const [userRobotId, setUserRobotId] = useState(() => localStorage.getItem('digitalTwinRobotId') || 'robo1');
+    const brokerUrl = process.env.REACT_APP_MQTT_BROKER || 'wss://ycff1281.ala.eu-central-1.emqxsl.com:8084/mqtt';
+    const { isConnected, status, robotsPose } = useMQTT(brokerUrl);
 
     const renderPage = () => {
         switch(currentPage) {
@@ -35,11 +38,14 @@ function App() {
                                 <Coreografia/>
                             </div>
                         </aside>
-                        {/* Componente LigaLeds REMOVIDO */}
                     </>
                 );
             case 'giroscopio':
                 return <ControleGiroscopio />;
+            case 'multi':
+                return <ControleMultiRobo robotsPose={robotsPose} mqttOnline={isConnected} />;
+            case 'twin':
+                return <DigitalTwin robotsPose={robotsPose} mqttOnline={isConnected} robotId={userRobotId} onRobotIdChange={(id) => { setUserRobotId(id); localStorage.setItem('digitalTwinRobotId', id); }} />;
             case 'sobre':
                 return <Sobre />;
             default:
@@ -91,7 +97,19 @@ function App() {
                                 >
                                     🎯 Controle por Giro
                                 </button>
-                                <button className='bg-transparent hover:text-[#A0470C] py-2 px-4 border border-[#D96204] hover:border-[#A0470C] rounded transition-colors'>
+                                <button 
+                                    onClick={() => setCurrentPage('multi')}
+                                    className={`py-2 px-4 border rounded transition-colors ${
+                                        currentPage === 'multi' 
+                                            ? 'bg-[#F68621] text-white border-[#F68621]' 
+                                            : 'border-[#D96204] hover:text-[#A0470C] hover:border-[#A0470C]'
+                                    }`}
+                                >
+                                    🤖 Multi-Robô
+                                </button>
+                                <button onClick={() => setCurrentPage('twin')} className={`py-2 px-4 border rounded transition-colors ${
+                                    currentPage === 'twin' ? 'bg-[#F68621] text-white border-[#F68621]' : 'bg-transparent hover:text-[#A0470C] border-[#D96204] hover:border-[#A0470C]'
+                                }`}>
                                     Digital Twins
                                 </button>
                                 <button 

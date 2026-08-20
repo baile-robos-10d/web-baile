@@ -1,5 +1,5 @@
+// src/components/leds.jsx
 import React, { useState } from 'react';
-import Checkbox from '@mui/material/Checkbox';
 import useMQTT from '../hooks/useMQTT';
 
 function LigaLeds() {
@@ -33,17 +33,16 @@ function LigaLeds() {
                 {[0,1,2,3,4,5,6,7].map(i => (
                     <div key={i} className="flex flex-col items-center">
                         <span className="text-sm font-semibold mb-1 text-amber-800">LED {i+1}</span>
-                        <Checkbox
-                            checked={ledStates[i]}
-                            onChange={handleLedChange(i)}
-                            disabled={!isConnected}
-                            sx={{
-                                color: '#D96204',
-                                '&.Mui-checked': {
-                                    color: '#FF950C',
-                                },
-                            }}
-                        />
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                className="sr-only peer"
+                                checked={ledStates[i]}
+                                onChange={handleLedChange(i)}
+                                disabled={!isConnected}
+                            />
+                            <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-orange-500 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
+                        </label>
                     </div>
                 ))}
             </div>

@@ -51,7 +51,7 @@ function Sobre() {
         </div>
 
         <p className="text-sm text-gray-400 mt-6">
-          © 2024 - 10 Dimensões | Todos os direitos reservados
+          © 2026 - 10 Dimensões | Todos os direitos reservados
         </p>
       </div>
     </div>

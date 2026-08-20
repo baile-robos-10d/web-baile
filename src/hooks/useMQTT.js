@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import mqtt from 'mqtt';
 
-const DEFAULT_BROKER = 'wss://wf671196.ala.us-east-1.emqxsl.com:8084/mqtt';
+const DEFAULT_BROKER = 'wss://ycff1281.ala.eu-central-1.emqxsl.com:8084/mqtt';
 
 export function useMQTT(brokerUrl = process.env.REACT_APP_MQTT_BROKER || DEFAULT_BROKER) {
   const [isConnected, setIsConnected] = useState(false);
+  const [robotsPose, setRobotsPose] = useState({});
   const [status, setStatus] = useState(null);
   const clientRef = useRef(null);
 
@@ -44,17 +45,41 @@ export function useMQTT(brokerUrl = process.env.REACT_APP_MQTT_BROKER || DEFAULT
     }
     clientRef.current = client;
 
-    client.on('connect', (connack) => {
+    client.on('connect', () => {
       console.log('✅ MQTT conectado!');
       setIsConnected(true);
-      client.subscribe('status', { qos: 0 });
-      client.subscribe('robot/resposta', { qos: 1 });
+      client.subscribe('cmd');
+      client.subscribe('status');
+      //client.subscribe('robot/+/pose');
+      client.subscribe('robot/pose/+');
+      client.subscribe('robot/status');
     });
 
     client.on('message', (topic, payload) => {
       const msg = payload.toString();
-      console.log(`📨 [${topic}]: ${msg}`);
-      if (topic === 'status') setStatus(msg);
+      console.log(`📨 [${topic}]: ${msg.substring(0, 100)}`);
+      
+      if (topic === 'status') {
+        setStatus(msg);
+      } 
+      else if (topic === 'robot/status') {
+        console.log('📢 Status:', msg);
+      }
+      else if (topic.startsWith('robot/pose/')) {
+        try {
+          const robotId = topic.split('/')[2];
+          const data = JSON.parse(msg);
+          setRobotsPose(prev => ({
+            ...prev,
+            [robotId]: {
+              ...data,
+              lastUpdate: Date.now()
+            }
+          }));
+        } catch (e) {
+          console.error('Erro ao parsear pose:', e);
+        }
+      }
     });
 
     client.on('error', (err) => {
@@ -68,8 +93,10 @@ export function useMQTT(brokerUrl = process.env.REACT_APP_MQTT_BROKER || DEFAULT
 
     return () => {
       console.log('🧹 Encerrando cliente MQTT');
-      client.end(true);
-      clientRef.current = null;
+      if (clientRef.current) {
+        clientRef.current.end(true);
+        clientRef.current = null;
+      }
     };
   }, [brokerUrl]);
 
@@ -94,36 +121,29 @@ export function useMQTT(brokerUrl = process.env.REACT_APP_MQTT_BROKER || DEFAULT
   const parar = useCallback(() => sendCommand('DN0CPA'), [sendCommand]);
   
   const ligarLed = useCallback((n) => {
-    if (n >= 0 && n <= 7) {
-      sendCommand(`DN0CL${n}`);
-    }
+    if (n >= 0 && n <= 7) sendCommand(`DN0CL${n}`);
   }, [sendCommand]);
   
   const desligarLed = useCallback((n) => {
-    if (n >= 0 && n <= 7) {
-      sendCommand(`DN0CD${n}`);
-    }
+    if (n >= 0 && n <= 7) sendCommand(`DN0CD${n}`);
   }, [sendCommand]);
   
-  const iniciarCoreografia = useCallback(() => {
-    console.log('📤 Enviando DN0CG para iniciar coreografia');
-    sendCommand('DN0CG');
-  }, [sendCommand]);
-  
-  const pararCoreografia = useCallback(() => {
-    console.log('📤 Enviando DN0CPA para parar coreografia');
-    sendCommand('DN0CPA');
-  }, [sendCommand]);
-  
+  const iniciarCoreografia = useCallback(() => sendCommand('DN0CG'), [sendCommand]);
+  const pararCoreografia = useCallback(() => sendCommand('DN0CPA'), [sendCommand]);
   const tocarMusica = useCallback((id) => sendCommand(`DN0CM${id}`), [sendCommand]);
   const pararMusica = useCallback(() => sendCommand('DN0CPS'), [sendCommand]);
+  
+  // Novos comandos multi-robô
+  const setRobotId = useCallback((id) => sendCommand(`DN0ID${id}`), [sendCommand]);
+  const resetOdometry = useCallback(() => sendCommand('DN0RST'), [sendCommand]);
 
   return {
-    isConnected, status,
+    isConnected, status, robotsPose,
     mover, parar,
     ligarLed, desligarLed,
     iniciarCoreografia, pararCoreografia,
     tocarMusica, pararMusica,
+    setRobotId, resetOdometry,
     sendCommand,
   };
 }
