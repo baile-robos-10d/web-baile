@@ -5,9 +5,21 @@ const DEFAULT_BROKER = 'wss://ycff1281.ala.eu-central-1.emqxsl.com:8084/mqtt';
 
 export function useMQTT(brokerUrl = process.env.REACT_APP_MQTT_BROKER || DEFAULT_BROKER) {
   const [isConnected, setIsConnected] = useState(false);
+  const [isRobotConnected, setIsRobotConnected] = useState(false);
   const [robotsPose, setRobotsPose] = useState({});
   const [status, setStatus] = useState(null);
   const clientRef = useRef(null);
+  const watchdogTimerRef = useRef(null);
+
+  const resetWatchdog = useCallback(() => {
+    setIsRobotConnected(true);
+    if (watchdogTimerRef.current) {
+      clearTimeout(watchdogTimerRef.current);
+    }
+    watchdogTimerRef.current = setTimeout(() => {
+      setIsRobotConnected(false);
+    }, 2000); 
+  }, []);
 
   useEffect(() => {
     if (clientRef.current) {
@@ -66,6 +78,7 @@ export function useMQTT(brokerUrl = process.env.REACT_APP_MQTT_BROKER || DEFAULT
         console.log('📢 Status:', msg);
       }
       else if (topic.startsWith('robot/pose/')) {
+        resetWatchdog();
         try {
           const robotId = topic.split('/')[2];
           const data = JSON.parse(msg);
@@ -85,20 +98,32 @@ export function useMQTT(brokerUrl = process.env.REACT_APP_MQTT_BROKER || DEFAULT
     client.on('error', (err) => {
       console.error('❌ MQTT Error:', err.message || err);
       setIsConnected(false);
+      setIsRobotConnected(false);
     });
 
     client.on('reconnect', () => console.log('🔁 Reconectando...'));
-    client.on('offline', () => { console.log('⚠️ MQTT offline'); setIsConnected(false); });
-    client.on('close', () => { console.log('🔌 Conexão fechada'); setIsConnected(false); });
+    client.on('offline', () => { 
+      console.log('⚠️ MQTT offline'); 
+      setIsConnected(false); 
+      setIsRobotConnected(false); 
+    });
+
+    client.on('close', () => { 
+      console.log('🔌 Conexão fechada'); 
+      setIsConnected(false); 
+      setIsRobotConnected(false); 
+
+    });
 
     return () => {
       console.log('🧹 Encerrando cliente MQTT');
+      if (watchdogTimerRef.current) clearTimeout(watchdogTimerRef.current);
       if (clientRef.current) {
         clientRef.current.end(true);
         clientRef.current = null;
       }
     };
-  }, [brokerUrl]);
+  }, [brokerUrl, resetWatchdog]); 
 
   const sendCommand = useCallback((comando) => {
     if (!clientRef.current || !clientRef.current.connected) {
@@ -138,13 +163,11 @@ export function useMQTT(brokerUrl = process.env.REACT_APP_MQTT_BROKER || DEFAULT
   const resetOdometry = useCallback(() => sendCommand('DN0RST'), [sendCommand]);
 
   return {
-    isConnected, status, robotsPose,
-    mover, parar,
-    ligarLed, desligarLed,
+    isConnected, status, robotsPose, isRobotConnected,
+    mover, parar, ligarLed, desligarLed,
     iniciarCoreografia, pararCoreografia,
     tocarMusica, pararMusica,
-    setRobotId, resetOdometry,
-    sendCommand,
+    setRobotId, resetOdometry, sendCommand,
   };
 }
 
