@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import useMQTT from '../hooks/useMQTT';
+import { useMQTT } from '../hooks/useMQTT';
 import Cima from '../assets/seta_up.png';
 import Esquerda from '../assets/seta_left.png';
 import Direita from '../assets/seta_rigth.jpg';
