@@ -1,4 +1,214 @@
 @tailwind base; 
 @tailwind components;
-@tailwind utilities;    
+@tailwind utilities;
 
+/* ===== ANIMAÇÕES GLOBAIS ===== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(246, 38, 129, 0.2); }
+    50% { box-shadow: 0 0 40px rgba(246, 38, 129, 0.4); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-slideIn {
+    animation: slideIn 0.4s ease-out forwards;
+}
+
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+}
+
+/* ===== SCROLLBAR PERSONALIZADA ===== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(246, 38, 129, 0.05);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #f62681, #F68621);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #d41f6e, #e0771a);
+}
+
+/* ===== CARDS E CONTAINERS ===== */
+.glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(246, 38, 129, 0.08);
+}
+
+.glass-card-dark {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(246, 38, 129, 0.1);
+    box-shadow: 0 8px 32px rgba(246, 38, 129, 0.12);
+}
+
+/* ===== BOTÕES COM EFEITO ===== */
+.btn-gradient {
+    background: linear-gradient(135deg, #f62681, #F68621);
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(246, 38, 129, 0.3);
+}
+
+.btn-gradient:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(246, 38, 129, 0.4);
+}
+
+.btn-gradient:active {
+    transform: translateY(0px) scale(0.98);
+}
+
+.btn-outline-gradient {
+    background: transparent;
+    color: #f62681;
+    border: 2px solid #f62681;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #f62681, #F68621);
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(246, 38, 129, 0.3);
+}
+
+/* ===== INPUTS E SELETORES ===== */
+.input-modern {
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(246, 38, 129, 0.15);
+    border-radius: 12px;
+    padding: 10px 16px;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.input-modern:focus {
+    outline: none;
+    border-color: #f62681;
+    box-shadow: 0 0 0 4px rgba(246, 38, 129, 0.1);
+    background: white;
+}
+
+.input-modern:hover {
+    border-color: rgba(246, 38, 129, 0.3);
+}
+
+/* ===== RANGE SLIDER PERSONALIZADO ===== */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #f62681, #F68621);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f62681, #F68621);
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(246, 38, 129, 0.4);
+    transition: all 0.3s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 20px rgba(246, 38, 129, 0.5);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f62681, #F68621);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 10px rgba(246, 38, 129, 0.4);
+}
+
+/* ===== BADGES E INDICADORES ===== */
+.badge-pink {
+    background: linear-gradient(135deg, #f62681, #f62681/80);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-orange {
+    background: linear-gradient(135deg, #F68621, #F68621/80);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 640px) {
+    .page-container {
+        padding: 0 4px;
+    }
+    
+    .glass-card {
+        backdrop-filter: blur(8px);
+    }
+}
+
+/* ===== UTILITÁRIOS ===== */
+.text-gradient {
+    background: linear-gradient(135deg, #f62681, #F68621);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.shadow-glow {
+    box-shadow: 0 0 40px rgba(246, 38, 129, 0.15);
+}
+
+.shadow-glow-lg {
+    box-shadow: 0 0 60px rgba(246, 38, 129, 0.2);
+}
+
+.border-gradient {
+    border-image: linear-gradient(135deg, #f62681, #F68621) 1;
+}

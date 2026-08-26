@@ -1,13 +1,11 @@
-// src/components/musicas.jsx - VERSÃO COMPLETA (SUBSTITUIR O ARQUIVO)
 import React, { useState } from 'react';
 import useMQTT from '../hooks/useMQTT';
 
-// Lista de músicas disponíveis
 const musicasDisponiveis = [
-    { nome: 'Billie Jean', id: 1, emoji: '🎤' },
-    { nome: 'Thriller', id: 2, emoji: '🧟' },
-    { nome: 'Beat It', id: 3, emoji: '🎸' },
-    { nome: 'Smooth Criminal', id: 4, emoji: '🕺' }
+    { nome: 'Billie Jean', id: 1, emoji: '🎤', cor: 'from-blue-400 to-purple-500' },
+    { nome: 'Thriller', id: 2, emoji: '🧟', cor: 'from-red-400 to-orange-500' },
+    { nome: 'Beat It', id: 3, emoji: '🎸', cor: 'from-green-400 to-emerald-500' },
+    { nome: 'Smooth Criminal', id: 4, emoji: '🕺', cor: 'from-pink-400 to-rose-500' }
 ];
 
 function Musicas() {
@@ -17,163 +15,128 @@ function Musicas() {
     const { tocarMusica, pararMusica, isConnected } = useMQTT();
 
     const selecionarMusica = (musica) => {
-        console.log('🎵 Selecionando música:', musica.nome, 'ID:', musica.id);
-        console.log('isConnected:', isConnected);
-        
         if (!isConnected) {
             setMensagem('⚠️ Sistema desconectado!');
             setTimeout(() => setMensagem(''), 2000);
             return;
         }
-        
         setMusicaSelecionada(musica.id);
-        setMensagem(`📀 Música selecionada: ${musica.nome}`);
-        setTimeout(() => setMensagem(''), 2000);
+        setMensagem(`📀 ${musica.nome} selecionada`);
+        setTimeout(() => setMensagem(''), 1500);
     };
 
     const tocarMusicaSelecionada = () => {
-        console.log('▶️ PLAY pressionado');
-        console.log('isConnected:', isConnected);
-        console.log('musicaSelecionada:', musicaSelecionada);
-        console.log('isPlaying:', isPlaying);
-        
         if (!isConnected) {
             setMensagem('⚠️ Sistema desconectado!');
             setTimeout(() => setMensagem(''), 2000);
             return;
         }
-        
         if (!musicaSelecionada) {
-            setMensagem('⚠️ Selecione uma música primeiro!');
-            setTimeout(() => setMensagem(''), 2000);
+            setMensagem('⚠️ Selecione uma música!');
+            setTimeout(() => setMensagem(''), 1500);
             return;
         }
-        
         const musica = musicasDisponiveis.find(m => m.id === musicaSelecionada);
-        console.log('📤 Enviando comando para tocar música ID:', musicaSelecionada);
         tocarMusica(musicaSelecionada);
         setIsPlaying(true);
         setMensagem(`🎶 Tocando: ${musica.nome}`);
-        setTimeout(() => setMensagem(''), 3000);
+        setTimeout(() => setMensagem(''), 2500);
     };
 
     const pararMusicaAtual = () => {
-        console.log('⏹️ STOP pressionado');
-        console.log('isConnected:', isConnected);
-        console.log('isPlaying:', isPlaying);
-        
         if (!isConnected) {
             setMensagem('⚠️ Sistema desconectado!');
             setTimeout(() => setMensagem(''), 2000);
             return;
         }
-        
-        console.log('📤 Enviando comando para parar música');
         pararMusica();
         setIsPlaying(false);
         setMensagem('⏹️ Música parada');
-        setTimeout(() => setMensagem(''), 2000);
+        setTimeout(() => setMensagem(''), 1500);
     };
 
     return (
-        <div className="flex flex-col items-center px-6 py-8 w-full font-bold bg-white border-pink-400 border-solid border-[10px] rounded-[32px] text-amber-950">
-            {/* Título */}
-            <section className="text-5xl max-md:text-4xl mb-2">
-                Músicas
-            </section>
-            
-            {/* Status de conexão */}
-            <div className={`text-sm mb-4 ${isConnected ? 'text-green-500' : 'text-red-500'}`}>
-                {isConnected ? '🎧 Sistema de áudio pronto' : '⚠️ Áudio desconectado'}
+        <div className="flex flex-col items-center p-6 w-full bg-gradient-to-br from-white/95 to-amber-50/80 backdrop-blur-sm rounded-2xl border border-amber-200/30 shadow-xl shadow-amber-500/5">
+            <div className="flex items-center gap-2 mb-3">
+                <span className="text-2xl">🎵</span>
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-[#f62681] to-[#F68621] bg-clip-text text-transparent">
+                    Músicas
+                </h3>
             </div>
             
-            {/* Status de execução */}
-            {isPlaying && (
-                <div className="text-sm text-green-500 animate-pulse mb-4">
-                    🎵 Música em execução...
-                </div>
-            )}
-            
-            {/* Mensagem de feedback */}
+            <div className="flex items-center gap-2 text-xs mb-3">
+                <span className={`inline-block w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+                <span className={isConnected ? 'text-emerald-600' : 'text-rose-600'}>
+                    {isConnected ? 'Áudio pronto' : 'Áudio off'}
+                </span>
+                {isPlaying && (
+                    <span className="inline-flex items-center gap-1 text-emerald-600">
+                        <span className="animate-pulse">●</span> Tocando
+                    </span>
+                )}
+            </div>
+
             {mensagem && (
-                <div className="text-sm text-pink-600 mb-4 animate-pulse">
+                <div className={`text-xs mb-3 font-medium ${mensagem.includes('⚠️') ? 'text-rose-500' : mensagem.includes('✅') ? 'text-emerald-600' : 'text-amber-600'}`}>
                     {mensagem}
                 </div>
             )}
-            
-            {/* Música selecionada */}
-            <div className="text-sm text-gray-500 mb-6">
-                {musicaSelecionada ? (
-                    <span>✅ Selecionado: {musicasDisponiveis.find(m => m.id === musicaSelecionada)?.nome}</span>
-                ) : (
-                    <span>⚪ Nenhuma música selecionada</span>
-                )}
-            </div>
-            
-            {/* Botões de seleção de música (igual estilo dos LEDs) */}
-            <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-8">
+
+            <div className="grid grid-cols-2 gap-2 w-full max-w-xs mb-4">
                 {musicasDisponiveis.map(musica => (
                     <button
                         key={musica.id}
                         onClick={() => selecionarMusica(musica)}
                         disabled={!isConnected}
                         className={`
-                            flex items-center justify-center gap-3 py-4 px-3 rounded-xl
-                            transition-all duration-200 transform
-                            font-bold text-white text-lg
+                            flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold
+                            transition-all duration-300
                             ${musicaSelecionada === musica.id 
-                                ? 'scale-105 ring-4 ring-pink-400 shadow-lg bg-orange-600' 
-                                : 'hover:scale-102 bg-amber-600 hover:bg-amber-700'
+                                ? `bg-gradient-to-r ${musica.cor} text-white shadow-lg scale-[1.02]` 
+                                : 'bg-white/80 hover:bg-amber-50/80 border-2 border-amber-200/40 text-amber-800 hover:border-amber-300'
                             }
-                            ${!isConnected ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'cursor-pointer'}
+                            ${!isConnected ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                         `}
                     >
-                        <span className="text-2xl">{musica.emoji}</span>
-                        <span>{musica.nome}</span>
+                        <span className="text-lg">{musica.emoji}</span>
+                        <span className="truncate">{musica.nome}</span>
                     </button>
                 ))}
             </div>
-            
-            {/* Botões de controle PLAY e STOP */}
-            <div className="flex gap-6 w-full max-w-md">
-                {/* Botão PLAY */}
+
+            <div className="flex gap-3 w-full max-w-xs">
                 <button
                     onClick={tocarMusicaSelecionada}
                     disabled={!isConnected || !musicaSelecionada || isPlaying}
                     className={`
-                        flex-1 py-4 rounded-xl font-bold text-white text-xl
-                        transition-all duration-200 transform
-                        flex items-center justify-center gap-3
+                        flex-1 py-2.5 rounded-xl font-bold text-white text-sm
+                        transition-all duration-300 flex items-center justify-center gap-2
                         ${(!isConnected || !musicaSelecionada || isPlaying)
-                            ? 'bg-gray-400 cursor-not-allowed opacity-50'
-                            : 'bg-green-600 hover:bg-green-700 hover:scale-105 active:scale-95'
+                            ? 'bg-gray-300 cursor-not-allowed opacity-50'
+                            : 'bg-gradient-to-r from-emerald-500 to-green-500 hover:shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5 active:scale-95'
                         }
                     `}
                 >
-                    <span>▶️</span> PLAY
+                    <span>▶</span> PLAY
                 </button>
-                
-                {/* Botão STOP */}
                 <button
                     onClick={pararMusicaAtual}
                     disabled={!isConnected || !isPlaying}
                     className={`
-                        flex-1 py-4 rounded-xl font-bold text-white text-xl
-                        transition-all duration-200 transform
-                        flex items-center justify-center gap-3
+                        flex-1 py-2.5 rounded-xl font-bold text-white text-sm
+                        transition-all duration-300 flex items-center justify-center gap-2
                         ${(!isConnected || !isPlaying)
-                            ? 'bg-gray-400 cursor-not-allowed opacity-50'
-                            : 'bg-red-600 hover:bg-red-700 hover:scale-105 active:scale-95'
+                            ? 'bg-gray-300 cursor-not-allowed opacity-50'
+                            : 'bg-gradient-to-r from-rose-500 to-red-500 hover:shadow-lg hover:shadow-rose-500/25 hover:-translate-y-0.5 active:scale-95'
                         }
                     `}
                 >
-                    <span>⏹️</span> STOP
+                    <span>⏹</span> STOP
                 </button>
             </div>
-            
-            {/* Dica de uso */}
-            <div className="mt-6 text-xs text-gray-400 text-center">
-                <p>💡 1. Selecione uma música &nbsp;&nbsp; 2. Clique em PLAY &nbsp;&nbsp; 3. Use STOP para parar</p>
+
+            <div className="mt-3 text-[10px] text-amber-400/60 text-center">
+                Selecione uma música, depois PLAY
             </div>
         </div>
     );
