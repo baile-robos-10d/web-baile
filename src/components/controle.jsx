@@ -6,7 +6,7 @@ import Direita from '../assets/seta_rigth.jpg';
 import Baixo from '../assets/seta_down.png';
 
 function Controle() {
-    const { mover, parar, isConnected } = useMQTT('wss://ycff1281.ala.eu-central-1.emqxsl.com:8084/mqtt');
+    const { mover, parar, isConnected, isRobotConnected } = useMQTT('wss://ycff1281.ala.eu-central-1.emqxsl.com:8084/mqtt');
     const [activeDir, setActiveDir] = useState(null);
 
     const handleStart = useCallback((x, y, dir) => {
@@ -21,10 +21,16 @@ function Controle() {
 
     return (
         <div className="flex flex-col items-center">
-            <div className={`text-sm mb-2 font-bold ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
-                {isConnected ? '✅ Robô Conectado' : '❌ Robô Desconectado'}
+            <div className={`text-sm mb-1 font-bold ${isRobotConnected ? 'text-green-600' : 'text-red-600'}`}>
+                {isRobotConnected ? '✅ Robô Conectado' : '❌ Robô Desconectado'}
             </div>
             
+            {!isConnected && (
+                <div className="text-xs text-red-500 mb-2 font-bold animate-pulse">
+                    ⚠️ Sem conexão com o Servidor em Nuvem (EMQX)
+                </div>
+            )}
+
             <section className="p-2.5 text-5xl font-bold text-center text-pink-950 max-md:text-4xl">
                 Controle Manual
             </section>
