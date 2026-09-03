@@ -18,7 +18,7 @@ import useMQTT from './hooks/useMQTT';
 function App() {
     const [currentPage, setCurrentPage] = useState('controle');
     const [userRobotId, setUserRobotId] = useState(() => localStorage.getItem('digitalTwinRobotId') || 'robo1');
-    const brokerUrl = process.env.REACT_APP_MQTT_BROKER || 'wss://e2792d91.ala.us-east-1.emqxsl.com:8084/mqtt';
+    const brokerUrl = process.env.REACT_APP_MQTT_BROKER || 'wss://bfea296c.ala.us-east-1.emqxsl.com:8084/mqtt';
     const { isConnected, status, robotsPose } = useMQTT(brokerUrl);
 
     // Navegação com animação

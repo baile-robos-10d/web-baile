@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import mqtt from 'mqtt';
 
-const DEFAULT_BROKER = 'wss://e2792d91.ala.us-east-1.emqxsl.com:8084/mqtt';
+const DEFAULT_BROKER = 'wss://bfea296c.ala.us-east-1.emqxsl.com:8084/mqtt';
 
 export function useMQTT(brokerUrl = process.env.REACT_APP_MQTT_BROKER || DEFAULT_BROKER) {
   const [isConnected, setIsConnected] = useState(false);
