@@ -117,6 +117,7 @@ export function useMQTT(brokerUrl = process.env.REACT_APP_MQTT_BROKER || DEFAULT
 
     return () => {
       console.log('🧹 Encerrando cliente MQTT');
+      if (watchdogTimerRef.current) clearTimeout(watchdogTimerRef.current);
       if (clientRef.current) {
         clientRef.current.end(true);
         clientRef.current = null;

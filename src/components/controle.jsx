@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import useMQTT from '../hooks/useMQTT';
+import { useMQTT } from '../hooks/useMQTT';
 import Cima from '../assets/seta_up.png';
 import Esquerda from '../assets/seta_left.png';
 import Direita from '../assets/seta_rigth.jpg';
@@ -24,6 +24,12 @@ function Controle() {
             <div className={`text-sm mb-1 font-bold ${isRobotConnected ? 'text-green-600' : 'text-red-600'}`}>
                 {isRobotConnected ? '✅ Robô Conectado' : '❌ Robô Desconectado'}
             </div>
+
+            {!isConnected && (
+                <div className="text-xs text-red-500 mb-2 font-bold animate-pulse">
+                    ⚠️ Sem conexão com o Servidor em Nuvem (EMQX)
+                </div>
+            )}
             
             {!isConnected && (
                 <div className="text-xs text-red-500 mb-2 font-bold animate-pulse">
